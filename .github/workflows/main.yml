@@ -1,0 +1,40 @@
+name: Build BitWiper EXE
+
+# Trigger workflow on push to main branch
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout repository code
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      # Step 2: Setup Python environment
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+
+      # Step 3: Install Python dependencies
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller pillow
+
+      # Step 4: Build .exe using PyInstaller
+      - name: Build EXE
+        run: |
+          pyinstaller --onefile --windowed --add-data "event.gif:." --add-data "Spark.png:." BitWiper.py
+
+      # Step 5: Upload the built .exe as artifact
+      - name: Upload EXE as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: BitWiper-EXE
+          path: dist/BitWiper.exe
